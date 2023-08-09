@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { db } from './firebase/firebase'
 
 function App() {
-  const DEFAULT_LANGUAGE = 'javascript'
-  const [language, setLanguage] = useState(DEFAULT_LANGUAGE)
-  const [code, setCode] = useState("console.log('Hello, world!')")
+  const [language, setLanguage] = useState('')
+  const [code, setCode] = useState('')
   const docId = useRef<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -93,7 +92,7 @@ function App() {
                 type='text'
                 name='language'
                 className='border-2 rounded-sm px-1 w-32'
-                defaultValue={DEFAULT_LANGUAGE}
+                value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               />
             </label>
@@ -105,7 +104,6 @@ function App() {
           <Editor
             className='mt-5 border-2'
             height='85svh'
-            defaultLanguage={DEFAULT_LANGUAGE}
             language={language}
             value={code}
             onChange={(value) => setCode(value ?? '')}
