@@ -1,117 +1,163 @@
-import Editor from '@monaco-editor/react'
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore'
-import { useEffect, useRef, useState } from 'react'
-import { db } from './firebase/firebase'
+import Editor from "@monaco-editor/react";
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
+import { db } from "./firebase/firebase";
 
 function App() {
-  const [language, setLanguage] = useState('')
-  const [code, setCode] = useState('')
-  const docId = useRef<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [language, setLanguage] = useState("");
+  const [code, setCode] = useState("");
+  const docId = useRef<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addCode = async () => {
     try {
       if (docId.current) {
-        await updateDoc(doc(db, 'documents', docId.current), {
+        await updateDoc(doc(db, "documents", docId.current), {
           language,
           code,
-        })
+        });
         navigator.clipboard.writeText(
-          window.location.origin + '?id=' + docId.current
-        )
-        setIsModalOpen(true)
+          window.location.origin + "?id=" + docId.current
+        );
+        setIsModalOpen(true);
         setTimeout(() => {
-          setIsModalOpen(false)
-        }, 5000)
-        return
+          setIsModalOpen(false);
+        }, 5000);
+        return;
       }
-      const docRef = await addDoc(collection(db, 'documents'), {
+      const docRef = await addDoc(collection(db, "documents"), {
         language,
         code,
-      })
-      docId.current = docRef.id
+      });
+      docId.current = docRef.id;
       navigator.clipboard.writeText(
-        window.location.origin + '?id=' + docId.current
-      )
-      setIsModalOpen(true)
+        window.location.origin + "?id=" + docId.current
+      );
+      setIsModalOpen(true);
       setTimeout(() => {
-        setIsModalOpen(false)
-      }, 5000)
+        setIsModalOpen(false);
+      }, 5000);
     } catch (e) {
-      console.error('Error adding document: ', e)
+      console.error("Error adding document: ", e);
     }
-  }
+  };
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const id = params.get('id')
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
     const getCode = async (id: string | null) => {
-      if (!id) return
-      const docSnap = await getDoc(doc(db, 'documents', id))
+      if (!id) return;
+      const docSnap = await getDoc(doc(db, "documents", id));
       if (docSnap.exists()) {
-        const data = docSnap.data()
+        const data = docSnap.data();
         if (data) {
-          setLanguage(data.language)
-          setCode(data.code)
+          setLanguage(data.language);
+          setCode(data.code);
         }
       }
-    }
-    getCode(id)
-  }, [])
+    };
+    getCode(id);
+  }, []);
 
   return (
     <>
+      {/* 改善されたモーダル */}
       <div
         className={
-          (isModalOpen ? 'opacity-100 top-2' : 'opacity-0 -top-2 invisible') +
-          ' transition-all duration-500 absolute z-50 w-[calc(100%-2.5rem)] left-1/2 -translate-x-1/2 bg-blue-100 border-t-4 border-blue-500 rounded-b text-blue-900 px-4 py-3 shadow-md'
+          (isModalOpen ? "opacity-100 top-4" : "opacity-0 -top-4 invisible") +
+          " transition-all duration-500 ease-out absolute z-50 w-[calc(100%-2rem)] max-w-md left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl text-emerald-800 px-6 py-4 shadow-lg backdrop-blur-sm"
         }
-        role='alert'
+        role="alert"
       >
-        <p className='font-bold flex items-center'>
-          <span>URLがコピーされました</span>
-          <button
-            className='i-mdi-close w-5 h-5 inline-block ml-auto'
-            onClick={() => setIsModalOpen(false)}
-          />
-        </p>
-        <a
-          className='text-sm underline underline-blue-500'
-          href={window.location.origin + '?id=' + docId.current}
-          target='_blank'
-        >
-          {window.location.origin + '?id=' + docId.current}
-        </a>
-      </div>
-      <div className='py-10 px-5'>
-        <div className='max-w-6xl mx-auto'>
-          <div className='flex items-center'>
-            <label>
-              <span>lang: </span>
-              <input
-                type='text'
-                name='language'
-                className='border-2 rounded-sm px-1 w-32'
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              />
-            </label>
-            <button
-              className='i-mdi-export-variant w-7 h-7 inline-block text-gray-500 ml-auto'
-              onClick={addCode}
-            />
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+            <span className="i-mdi-check text-emerald-600 w-5 h-5" />
           </div>
-          <Editor
-            className='mt-5 border-2'
-            height='85svh'
-            language={language}
-            value={code}
-            onChange={(value) => setCode(value ?? '')}
-          />
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-emerald-900 mb-1">
+              URLがコピーされました！
+            </p>
+            <a
+              className="text-sm text-emerald-700 hover:text-emerald-900 underline underline-offset-2 break-all transition-colors"
+              href={window.location.origin + "?id=" + docId.current}
+              target="_blank"
+            >
+              {window.location.origin + "?id=" + docId.current}
+            </a>
+          </div>
+          <button
+            className="flex-shrink-0 text-emerald-400 hover:text-emerald-600 transition-colors"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <span className="i-mdi-close w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* メインコンテンツ */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="py-8 px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* ヘッダーセクション */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    言語:
+                  </label>
+                  <input
+                    type="text"
+                    name="language"
+                    placeholder="javascript"
+                    className="border-2 border-slate-200 rounded-lg px-3 py-2 w-32 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2 font-medium"
+                  onClick={addCode}
+                >
+                  <span className="i-mdi-share-variant w-5 h-5" />
+                  共有
+                </button>
+              </div>
+            </div>
+
+            {/* エディターセクション */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              <Editor
+                height="75vh"
+                language={language}
+                value={code}
+                onChange={(value) => setCode(value ?? "")}
+                options={{
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  padding: { top: 16, bottom: 16 },
+                  smoothScrolling: true,
+                  cursorBlinking: "smooth",
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
