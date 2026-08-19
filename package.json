@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -31,7 +34,6 @@
     "vite": "^4.4.5"
   },
   "volta": {
-    "node": "18.17.0",
-    "yarn": "1.22.19"
+    "node": "24.19.0"
   }
 }
