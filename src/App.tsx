@@ -2,14 +2,15 @@ import Editor from "@monaco-editor/react";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { db } from "./firebase/firebase";
-import { usePrefersDarkMode } from "./hooks/usePrefersDarkMode";
+import { useTheme } from "./hooks/useTheme";
 
 function App() {
   const [language, setLanguage] = useState("");
   const [code, setCode] = useState("");
   const docId = useRef<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isDarkMode = usePrefersDarkMode();
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   const addCode = async () => {
     try {
@@ -123,6 +124,24 @@ function App() {
                 >
                   <span className="i-mdi-share-variant w-5 h-5" />
                   共有
+                </button>
+
+                <button
+                  className="flex items-center justify-center w-10 h-10 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 transition-all duration-200"
+                  onClick={toggleTheme}
+                  aria-label={
+                    isDarkMode ? "ライトモードに切り替え" : "ダークモードに切り替え"
+                  }
+                  title={
+                    isDarkMode ? "ライトモードに切り替え" : "ダークモードに切り替え"
+                  }
+                >
+                  <span
+                    className={
+                      (isDarkMode ? "i-mdi-weather-sunny" : "i-mdi-weather-night") +
+                      " w-5 h-5"
+                    }
+                  />
                 </button>
               </div>
             </div>
