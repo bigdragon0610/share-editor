@@ -8,6 +8,7 @@ function App() {
   const [language, setLanguage] = useState("");
   const [code, setCode] = useState("");
   const docId = useRef<string | null>(null);
+  const [shareUrl, setShareUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -19,23 +20,16 @@ function App() {
           language,
           code,
         });
-        navigator.clipboard.writeText(
-          window.location.origin + "?id=" + docId.current
-        );
-        setIsModalOpen(true);
-        setTimeout(() => {
-          setIsModalOpen(false);
-        }, 5000);
-        return;
+      } else {
+        const docRef = await addDoc(collection(db, "documents"), {
+          language,
+          code,
+        });
+        docId.current = docRef.id;
       }
-      const docRef = await addDoc(collection(db, "documents"), {
-        language,
-        code,
-      });
-      docId.current = docRef.id;
-      navigator.clipboard.writeText(
-        window.location.origin + "?id=" + docId.current
-      );
+      const url = window.location.origin + "?id=" + docId.current;
+      setShareUrl(url);
+      navigator.clipboard.writeText(url);
       setIsModalOpen(true);
       setTimeout(() => {
         setIsModalOpen(false);
@@ -82,10 +76,10 @@ function App() {
             </p>
             <a
               className="text-sm text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 underline underline-offset-2 break-all transition-colors"
-              href={window.location.origin + "?id=" + docId.current}
+              href={shareUrl}
               target="_blank"
             >
-              {window.location.origin + "?id=" + docId.current}
+              {shareUrl}
             </a>
           </div>
           <button

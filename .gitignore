@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# playwright-cli の作業ファイル
+.playwright-cli
