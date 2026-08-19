@@ -88,7 +88,7 @@ function App() {
             </a>
           </div>
           <button
-            className="flex-shrink-0 text-emerald-400 dark:text-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors"
+            className="flex-shrink-0 flex items-center text-emerald-400 dark:text-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors"
             onClick={() => setIsModalOpen(false)}
           >
             <span className="i-mdi-close w-5 h-5" />
